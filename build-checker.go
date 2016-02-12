@@ -4,46 +4,53 @@
 package main
 
 import (
-    "fmt"
-    "net/http"
-    "io/ioutil"
-    "log"
-    "regexp"
-    "strings"
+	"fmt"
+	"net/http"
+	"net/url"
+	"io/ioutil"
+	"regexp"
 )
 
 var sites []string = []string {
-    "http://dev.ncaa.com/build-number.txt",
-    "http://qa.ncaa.com/build-number.txt",
-    "http://staging.ncaa.com/build-number.txt",
-    "http://admin.ncaa.com/build-number.txt",
-    "http://gametool.ncaa.com/build-number.txt",
-    "http://carmen-qa.ncaa.com/build.html",
-    "http://carmen.ncaa.com/build.html",
-    "http://carmen-staging.ncaa.com/build.html",
+	"http://dev.ncaa.com/build-number.txt",
+	"http://qa.ncaa.com/build-number.txt",
+	"http://staging.ncaa.com/build-number.txt",
+	"http://admin.ncaa.com/build-number.txt",
+	"http://gametool.ncaa.com/build-number.txt",
+	"http://carmen-qa.ncaa.com/build.html",
+	"http://carmen.ncaa.com/build.html",
+	"http://carmen-staging.ncaa.com/build.html",
 }
 
 func checkNumber(site string) {
-    resp, err := http.Get(site)
-    if err != nil {
-        log.Fatal(err)
-    }
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        log.Fatal(err)
-    }
-    text := string(body)
-    // fmt.Println(text)
-    resp.Body.Close()
-    tester := regexp.MustCompile(`build.number=([0-9]+)`)
-    number := tester.FindStringSubmatch(text)
-    urlParts := strings.Split(site, "/");
-    host := urlParts[2]
-    fmt.Println(host, ":", number[1])
+	number := getBuildNumber(site)
+	siteUrl, err := url.Parse(site)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(siteUrl.Host, ":", number)
+}
+
+func getBuildNumber(site string)string {
+	resp, err := http.Get(site)
+	if err != nil {
+		fmt.Println(err)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+	text := string(body)
+	resp.Body.Close()
+
+	tester := regexp.MustCompile(`build.number=([0-9]+)`)
+	number := tester.FindStringSubmatch(text)
+	return number[0]
 }
 
 func main () {
-    for _, site := range sites {
-        checkNumber(site)
-    }
+	for _, site := range sites {
+		checkNumber(site)
+	}
 }
