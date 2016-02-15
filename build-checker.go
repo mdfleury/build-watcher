@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"io/ioutil"
 	"regexp"
+	"log"
 )
 
 var sites []string = []string {
@@ -22,35 +23,40 @@ var sites []string = []string {
 	"http://carmen-staging.ncaa.com/build.html",
 }
 
-func checkNumber(site string) {
+func checkNumber(site string) (string, string) {
 	number := getBuildNumber(site)
 	siteUrl, err := url.Parse(site)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
-
-	fmt.Println(siteUrl.Host, ":", number)
+	return siteUrl.Host, number
 }
 
 func getBuildNumber(site string)string {
 	resp, err := http.Get(site)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
+
+	if resp.StatusCode != 200 {
+		return "Unable to scrape page"
+	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 	text := string(body)
 	resp.Body.Close()
 
 	tester := regexp.MustCompile(`build.number=([0-9]+)`)
 	number := tester.FindStringSubmatch(text)
-	return number[0]
+	return number[1]
 }
 
 func main () {
 	for _, site := range sites {
-		checkNumber(site)
+		host, number := checkNumber(site)
+		fmt.Println(host, ":", number)
 	}
 }
