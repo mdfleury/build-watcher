@@ -8,14 +8,13 @@ import (
 	"net/url"
 	"io/ioutil"
 	"regexp"
-	"log"
 )
 
 func CheckNumber(site string) (string, string) {
 	number := GetBuildNumber(site)
 	siteUrl, err := url.Parse(site)
 	if err != nil {
-		log.Fatal(err)
+		return site, "Unable to parse URL"
 	}
 	return siteUrl.Host, number
 }
@@ -23,16 +22,16 @@ func CheckNumber(site string) (string, string) {
 func GetBuildNumber(site string)string {
 	resp, err := http.Get(site)
 	if err != nil {
-		log.Fatal(err)
+		return "Unable to reach page"
 	}
 
 	if resp.StatusCode != 200 {
-		return "Unable to scrape page"
+		return "Invalid status code"
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return "Unable to read body"
 	}
 	text := string(body)
 	resp.Body.Close()
