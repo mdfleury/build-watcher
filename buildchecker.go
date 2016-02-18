@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"io/ioutil"
 	"regexp"
+	"fmt"
 )
 
 func CheckNumber(site string) (string, string) {
@@ -39,4 +40,11 @@ func GetBuildNumber(site string)string {
 	tester := regexp.MustCompile(`build.number=([0-9]+)`)
 	number := tester.FindStringSubmatch(text)
 	return number[1]
+}
+
+func CheckSites(sites []string) {
+	for _, site := range sites {
+		host, number := CheckNumber(site)
+		fmt.Println(host, ":", number)
+	}
 }
