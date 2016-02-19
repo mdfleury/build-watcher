@@ -1,6 +1,6 @@
 # Is my build out yet? #
 
-Sample 1: Check builds
+Sample 1: Check builds (runs once then stops)
 
 ```
 #!go
@@ -26,7 +26,7 @@ func main () {
 }
 ```
 
-Sample 2: Watch for builds
+Sample 2: Watch for builds (runs continuously, alerting of changes)
 
 ```
 #!go
