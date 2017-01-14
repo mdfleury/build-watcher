@@ -24,10 +24,13 @@ var (
 )
 
 func notify(host string, number string) {
-	note := gosxnotifier.NewNotification("Check your Apple Stock!")
+	message := fmt.Sprintf("Build %s is out!", number)
+	note := gosxnotifier.NewNotification(message)
+	note.Title = host
+	note.Link = fmt.Sprintf("http://%s", host)
 	err := note.Push()
 	if err != nil {
-		fmt.Println("Notifcation Error")
+		fmt.Println("Notification Error")
 	}
 }
 
@@ -57,7 +60,7 @@ func GetBuildNumber(site string) string {
 	text := string(body)
 	resp.Body.Close()
 
-	tester := regexp.MustCompile(`build.number=([0-9]+)`)
+	tester := regexp.MustCompile(`build.number=?:?\s*?([0-9]+)`)
 	number := tester.FindStringSubmatch(text)
 	return number[1]
 }
@@ -76,6 +79,7 @@ func CheckSiteChanges(sites []string) {
 		if _, ok := siteNumberStore[host]; ok {
 			if siteNumberStore[host] != number {
 				notify(host, number)
+				siteNumberStore[host] = number
 			}
 		} else {
 			siteNumberStore[host] = number
