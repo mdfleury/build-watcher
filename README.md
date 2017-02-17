@@ -7,7 +7,7 @@ Sample 1: Check builds (runs once then stops)
 package main
 
 import (
-	"mfleury/buildchecker"
+	"bitbucket.org/mfleury_turner/build-watcher"
 )
 
 var sites []string = []string {
@@ -33,7 +33,7 @@ Sample 2: Watch for builds (runs continuously, alerting of changes)
 package main
 
 import (
-	"mfleury/buildchecker"
+	"bitbucket.org/mfleury_turner/build-watcher"
 )
 
 var sites []string = []string {
